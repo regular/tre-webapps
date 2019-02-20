@@ -1,0 +1,28 @@
+{
+  "name": "tre-webapps",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/regular/tre-webapps.git"
+  },
+  "keywords": [
+    "tre"
+  ],
+  "author": "Jan Bölsche <jan@lagomorph.de> (https://regular.codes/)",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/regular/tre-webapps/issues"
+  },
+  "homepage": "https://github.com/regular/tre-webapps#readme",
+  "dependencies": {
+    "deep-equal": "^1.0.1",
+    "human-time": "0.0.2",
+    "mutant": "^3.22.1",
+    "tre-prototypes": "^1.6.0"
+  }
+}
