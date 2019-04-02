@@ -8,6 +8,7 @@ const deepEqual = require('deep-equal')
 module.exports = function(ssb, opts) {
   opts = opts || {}
   const watchMerged = WatchMerged(ssb)
+  const canAutoUpdate = opts.canAutoUpdate || Value(false)
 
   return function renderWebapp(kv, ctx) {
     ctx = ctx || {}
@@ -26,11 +27,27 @@ module.exports = function(ssb, opts) {
         kvm.value.content.config || {}
       )
 
-      const codeChanged = content.codeBlob !== kvm.value.content.codeBlob
+      const blobRef = kvm.value.content.codeBlob
+      const codeChanged = content.codeBlob !== blobRef
+
+      const blobAvailable = Value(true)
+      if (codeChanged) {
+        blobAvailable.set(false)
+        console.log('webapp: wanting blob', blobRef)
+        ssb.blobs.want(blobRef, (err, has) => {
+          if (err) return console.error(err.message)
+          blobAvailable.set(has)
+        })
+      }
 
       const buttonLabel = codeChanged ? `Update to ${kvm.key.substr(0,6)}` : (configChanged ? 'Reload Config' : '')
 
       const seconds = Value()
+
+
+      function reload() {
+        document.location.pathname='/boot/' + encodeURIComponent(kvm.key)
+      }
 
       return h('.tre-webapp', {
         hooks: [el => {
@@ -43,12 +60,21 @@ module.exports = function(ssb, opts) {
           h('.branch', content.repositoryBranch),
         ]),
         h('.version', kv.key.substr(0,6)),
-        h('button', {
-          style: { opacity: buttonLabel ? 1 : 0 },
-          'ev-click': e => {
-            document.location.pathname='/boot/' + encodeURIComponent(kvm.key)
-          },
-        }, buttonLabel),
+        computed([blobAvailable, canAutoUpdate], (has, auto) => {
+          if (has) {
+            if (!auto) {
+              return h('button', {
+                style: { opacity: buttonLabel ? 1 : 0 },
+                'ev-click': e => {
+                  reload()
+                },
+              }, buttonLabel)
+            }
+            reload()
+          } else {
+            return h('span', 'loading')
+          }
+        }),
         h('.deployed', computed(seconds, s => humanTime(new Date(kv.value.timestamp))))
       ])
     })
