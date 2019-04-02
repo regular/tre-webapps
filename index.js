@@ -60,17 +60,15 @@ module.exports = function(ssb, opts) {
           h('.branch', content.repositoryBranch),
         ]),
         h('.version', kv.key.substr(0,6)),
-        computed([blobAvailable, canAutoUpdate], (has, auto) => {
+        !codeChanged ? [] : computed([blobAvailable, canAutoUpdate], (has, auto) => {
           if (has) {
-            if (!auto) {
-              return h('button', {
-                style: { opacity: buttonLabel ? 1 : 0 },
-                'ev-click': e => {
-                  reload()
-                },
-              }, buttonLabel)
-            }
-            reload()
+            if (auto) return reload()
+            return h('button', {
+              style: { opacity: buttonLabel ? 1 : 0 },
+              'ev-click': e => {
+                reload()
+              },
+            }, buttonLabel)
           } else {
             return h('span', 'loading')
           }
