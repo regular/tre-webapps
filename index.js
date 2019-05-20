@@ -44,7 +44,6 @@ module.exports = function(ssb, opts) {
 
       const seconds = Value()
 
-
       function reload() {
         document.location.pathname='/boot/' + encodeURIComponent(kvm.key)
       }
@@ -73,7 +72,10 @@ module.exports = function(ssb, opts) {
             return h('span', 'loading')
           }
         }),
-        h('.deployed', computed(seconds, s => humanTime(new Date(kv.value.timestamp))))
+        h('.deployed', computed(seconds, s => humanTime(new Date(kv.value.timestamp)))),
+        ctx.where !== 'editor' ? [] : h('button', {
+          'ev-click': ev => reload()
+        }, 'load')
       ])
     })
 
