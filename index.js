@@ -9,6 +9,7 @@ module.exports = function(ssb, opts) {
   opts = opts || {}
   const watchMerged = WatchMerged(ssb)
   const canAutoUpdate = opts.canAutoUpdate || Value(false)
+  const shouldReload = opts.shouldReload || Value(false)
 
   return function renderWebapp(kv, ctx) {
     ctx = ctx || {}
@@ -37,6 +38,7 @@ module.exports = function(ssb, opts) {
         ssb.blobs.want(blobRef, (err, has) => {
           if (err) return console.error(err.message)
           blobAvailable.set(has)
+          shouldReload.set(has)
         })
       }
 
